@@ -222,4 +222,54 @@ describe("Registro de Ventas", () => {
     const m = await leerCliente(3, () => true);
     assert.equal(m.idCliente, 3);
   });
+
+    it("[APORTE] RECHAZA descripcion de mas de 50 caracteres (DescripcionInvalida)", async () => {
+    await esperaError(
+      pg.program.methods
+        .registrarVenta(2, "DES01", "x".repeat(51), 10)
+        .accounts({ owner, registro, cliente: cliente(2), venta: venta(cliente(2), "DES01") })
+        .rpc(rpcOpts),
+      "DescripcionInvalida"
+    );
+    assert(await existe(venta(cliente(2), "DES01"), false));
+  });
+
+  it("[APORTE] RECHAZA el cliente numero 11 (RegistroLleno)", async function () {
+    this.timeout(300000);
+    for (let id = 4; id <= 11; id++) {
+      await pg.program.methods
+        .crearCliente("C" + id)
+        .accounts({ owner, registro, cliente: cliente(id) })
+        .rpc(rpcOpts);
+    }
+    const r = await leerRegistro((x) => x.clientes.length === 10);
+    assert.equal(r.clientes.length, 10);
+    await esperaError(
+      pg.program.methods
+        .crearCliente("Extra")
+        .accounts({ owner, registro, cliente: cliente(12) })
+        .rpc(rpcOpts),
+      "RegistroLleno"
+    );
+  });
+
+  it("[APORTE] RECHAZA la venta 11 de un cliente (HistorialLleno)", async function () {
+    this.timeout(300000);
+    for (let i = 1; i <= 10; i++) {
+      const sku = "H" + String(i).padStart(2, "0");
+      await pg.program.methods
+        .registrarVenta(2, sku, "Venta " + i, 10)
+        .accounts({ owner, registro, cliente: cliente(2), venta: venta(cliente(2), sku) })
+        .rpc(rpcOpts);
+    }
+    const c = await leerCliente(2, (x) => x.compras === 10);
+    assert.equal(c.compras, 10);
+    await esperaError(
+      pg.program.methods
+        .registrarVenta(2, "H11", "Venta 11", 10)
+        .accounts({ owner, registro, cliente: cliente(2), venta: venta(cliente(2), "H11") })
+        .rpc(rpcOpts),
+      "HistorialLleno"
+    );
+  });
 });
