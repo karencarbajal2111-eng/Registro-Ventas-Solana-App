@@ -1,6 +1,6 @@
 # Registro de Ventas en Solana con PDAs
 
-![banner](./images/banner.jpg)
+
 
 **Ruta elegida:** Proyecto guiado con una mejora funcional (WayLearn · Solana Engineering Track: Advanced).
 **Versión de partida:** [WayLearnLatam/Registro-Ventas-Solana-PDA](https://github.com/WayLearnLatam/Registro-Ventas-Solana-PDA) (cierre de las sesiones 1–5).
