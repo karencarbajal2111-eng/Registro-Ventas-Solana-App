@@ -1,178 +1,110 @@
-# Registro de Ventas · App
+# Registro de Ventas en Solana con PDAs
 
-![Registro de Ventas · App — Solana, TypeScript y React](./images/banner-app.png)
+![banner](./images/banner.jpg)
 
-Frontend educativo desarrollado con **TypeScript y React** para interactuar con el programa [Registro de Ventas con PDAs](https://github.com/WayLearnLatam/Registro-Ventas-Solana-PDA) en **Solana Devnet**.
+**Ruta elegida:** Proyecto guiado con una mejora funcional (WayLearn · Solana Engineering Track: Advanced).
+**Versión de partida:** [WayLearnLatam/Registro-Ventas-Solana-PDA](https://github.com/WayLearnLatam/Registro-Ventas-Solana-PDA) (cierre de las sesiones 1–5).
 
-Forma parte del **Solana Engineering Track: Advanced** de WayLearn. Aquí conectamos lo aprendido sobre cuentas, instrucciones y PDAs con una aplicación que se utiliza desde el navegador.
+- **Nombre (para el certificado):** Karen López Carbajal
+- **Correo de registro:** kaarl7476@gmail.com
+- **Program ID (Devnet):** `6oWpDCks3gXPfDiGhzPS2ypQUv2SQ36YZt9QVY9yLAbX` · [Ver en Solana Explorer](https://explorer.solana.com/address/6oWpDCks3gXPfDiGhzPS2ypQUv2SQ36YZt9QVY9yLAbX?cluster=devnet)
+- **Repositorio / frontend:** [https://github.com/karencarbajal2111-eng/Registro-Ventas-Solana-App](https://github.com/karencarbajal2111-eng/Registro-Ventas-Solana-App) (programa en `programa/`, aplicación en `src/`)
 
-Puedes comenzar haciendo **Fork** de este repositorio. Hemos preparado un entorno de **GitHub Codespaces** para que puedas concentrarte en los ejercicios sin instalar las herramientas del frontend en tu computadora. 🚀
+## Propósito
 
-> 📖 Sigue las explicaciones y actividades en el [GitBook de Advanced](https://waylearn.gitbook.io/solana-engineering-track-advanced).
+Programa de Solana (Rust + Anchor) para un negocio pequeño: un **Registro** del negocio, sus **Clientes** y las **Ventas** de cada cliente. Cada cuenta es una PDA derivada de su padre:
 
-## ¿Qué puedes hacer con la app?
-
-- Conectar una wallet y consultar saldos de Devnet.
-- Consultar un registro de ventas, sus clientes y las ventas activas de cada uno.
-- Crear un negocio y dar de alta a sus clientes.
-- Registrar ventas, corregir su importe y realizar devoluciones.
-- Revisar solicitudes de firma, confirmaciones y errores de las transacciones.
-
-El recorrido del proyecto sigue esta relación:
-
-**Registro del negocio → Clientes → Ventas**
-
-Cada entidad tiene su propia cuenta. El frontend deriva sus direcciones y utiliza el cliente generado a partir del IDL para leer datos y construir instrucciones.
-
-> ℹ️ El importe de una venta es un dato del ejercicio: **no cobra ni transfiere SOL o tokens**. La devolución elimina la venta del historial activo y cierra su cuenta; no realiza un reembolso comercial.
-
-## Antes de comenzar
-
-Necesitas una cuenta de GitHub y, para las operaciones que requieren firma, una wallet de navegador compatible con Solana y SOL de prueba en **Devnet**.
-
-Es recomendable tener conocimientos básicos de JavaScript o TypeScript y haber revisado el modelo de cuentas del [programa base](https://github.com/WayLearnLatam/Registro-Ventas-Solana-PDA).
-
-**No necesitas la Solana CLI para ejecutar este frontend.** Puedes trabajar con el programa desplegado desde Solana Playground.
-
-## Comenzar con Codespaces
-
-### 1. Crea tu copia
-
-Haz clic en **Fork**, en la parte superior de este repositorio, para crear una copia en tu cuenta. Así podrás guardar tus cambios y continuar con tu proyecto.
-
-### 2. Abre el entorno
-
-Desde tu copia, selecciona **Code → Codespaces → Create codespace on main**.
-
-Espera a que termine la preparación. El contenedor incluye Node 22 y ejecuta automáticamente la instalación de dependencias y la generación del cliente.
-
-### 3. Inicia la app
-
-En la terminal de Codespaces ejecuta:
-
-```bash
-npm run dev
+```
+registro <- ["registro", nombre_negocio, owner]
+cliente  <- ["cliente",  registro, id_cliente (u16 LE)]
+venta    <- ["venta",    cliente,  sku]
 ```
 
-### 4. Ábrela en tu navegador
+La pertenencia queda garantizada por las seeds y la autoridad por `has_one = owner`.
 
-En la pestaña **Ports / Puertos**, localiza el **5173** y selecciona **Open in Browser**.
+## Instrucciones del programa
 
-Abre la aplicación en una pestaña normal del navegador donde tienes instalada tu wallet. La vista incrustada del editor puede no detectar la extensión. El puerto puede permanecer privado; utiliza la misma cuenta de GitHub para acceder.
-
-> 💡 Al terminar, detén el Codespace desde el menú de Codespaces para evitar consumir tiempo de cómputo mientras no lo utilizas.
-
-## Ejecutar en tu computadora
-
-Si prefieres trabajar en local, utiliza **Node.js 22.12 o superior de la rama 22** y npm. Clona tu fork o utiliza directamente el repositorio original:
-
-```bash
-git clone https://github.com/WayLearnLatam/Registro-Ventas-Solana-App.git
-cd Registro-Ventas-Solana-App
-npm ci
-npm run cliente
-npm run dev
-```
-
-Abre `http://localhost:5173` en el navegador con tu wallet instalada.
-
-En Windows puedes ejecutar estos comandos desde WSL. El repositorio también incluye una configuración de Dev Container para VS Code, si ya utilizas Docker y la extensión Dev Containers.
-
-## Conectar el programa de Solana
-
-El frontend y el programa son dos partes del mismo proyecto:
-
-| Parte | Responsabilidad |
+| Instrucción | Qué hace |
 | --- | --- |
-| [Programa Rust + Anchor](https://github.com/WayLearnLatam/Registro-Ventas-Solana-PDA) | Define las cuentas, ejecuta instrucciones y valida permisos. |
-| Este frontend | Lee cuentas, construye instrucciones y solicita a la wallet que firme las transacciones. |
-| IDL y cliente generado | Describen la interfaz del programa y permiten utilizarla desde TypeScript. |
+| `crear_registro` | Crea el Registro del negocio. |
+| `crear_cliente` | Alta de cliente; el programa asigna el id con `id_counter`. |
+| `registrar_venta` | Crea la Venta y actualiza `historial` y `compras` del Cliente. |
+| `cambiar_monto` | Corrige el monto de una Venta existente. |
+| `hacer_devolucion` | Cierra la cuenta de la Venta (`close = owner`) y actualiza el Cliente. |
+| `eliminar_cliente` | **Baja de cliente (sesión 5).** Solo si `historial` está vacío y `compras == 0`; cierra la cuenta, retira su referencia del Registro y **no** modifica `id_counter`. |
 
-### Si aparece «programa de referencia»
+## Aporte propio
 
-El repositorio incluye un **IDL de referencia** para estudiar la estructura y generar el cliente. Con esa configuración puedes conectar tu wallet y consultar saldos; la consulta del registro y sus operaciones permanecen bloqueadas hasta importar el IDL del despliegue que utilizarás.
+Sobre la base guiada (que ya incluye la baja de cliente) añadí **validaciones de negocio en Rust**, cada una con su caso de rechazo probado:
 
-Si la versión de clase ya viene configurada para el programa correspondiente, puedes continuar con las actividades sin repetir este paso.
+| Regla nueva | Error | Dónde |
+| --- | --- | --- |
+| El monto debe ser mayor a 0 | `MontoInvalido` | `registrar_venta`, `cambiar_monto` |
+| El SKU no puede estar vacío ni exceder 5 caracteres | `SkuInvalido` | `registrar_venta` |
+| La descripción no puede exceder 50 caracteres | `DescripcionInvalida` | `registrar_venta` |
+| Máximo 10 clientes por Registro | `RegistroLleno` | `crear_cliente` |
+| Máximo 10 ventas por Cliente | `HistorialLleno` | `registrar_venta` |
+| El cliente debe estar referenciado en el Registro | `ClienteNoRegistrado` | `eliminar_cliente` |
 
-### Importar tu IDL
+**Qué mejora:** antes, una venta de monto 0 se aceptaba, y un SKU largo o el cliente número 11 fallaban con un error de serialización poco claro. Ahora el programa rechaza esos casos con un error específico y sin modificar ningún estado.
+**Cómo se comprueba:** pruebas `[APORTE]` de `tests/anchor.test.ts` (ver tabla de evidencias).
 
-Exporta desde Playground el IDL del programa que realmente compilaste y desplegaste en **Devnet**. Coloca el JSON dentro de tu espacio de trabajo, por ejemplo en `tmp-idl/registro.json`, y ejecuta desde la raíz:
+Además corregí los ejemplos de `client/client.ts`: el SKU `"Sabritas"` (8 caracteres) excedía `max_len(5)`; ahora es `"SAB01"`.
 
-```bash
-npm run configurar:idl -- ./tmp-idl/registro.json
+## Cómo ejecutarlo
+
+1. Abre el proyecto en [Solana Playground](https://beta.solpg.io/https://github.com/karlacateee-blip/Registro-Ventas-Solana-PDA), conéctalo a **Devnet** y pide airdrop.
+2. **Build** → **Deploy**. Anota el Program ID.
+3. **Test** (`tests/anchor.test.ts`) para correr las pruebas automáticas.
+4. `client/client.ts`: descomenta la operación que quieras probar y pulsa **Run**.
+5. Frontend (en la raíz del repositorio): `npm install`, importar el IDL con `npm run configurar:idl -- tmp-idl/registro-final.json --program-id 6oWpDCks3gXPfDiGhzPS2ypQUv2SQ36YZt9QVY9yLAbX`, `npm run verificar` y `npm run dev`. Conectar una wallet (Solflare) en Devnet. La pestaña **Eliminar cliente** llama a `eliminarCliente` y el programa rechaza la baja si el cliente tiene ventas activas.
+
+## Pruebas y evidencias (Devnet)
+
+Negocio de la práctica: **Tiendas 3B**. Cliente: Isaac K (id 1).
+Wallet de la práctica: `4nDoX1ZSuzZTM4a4Xc6CKyLybK5DiJAW1NZZ7iwe8Gty`.
+
+Además de las operaciones reales de abajo, `tests/anchor.test.ts` ejecuta **11 pruebas automáticas contra Devnet y las 11 pasan** (captura en `evidencias/`).
+
+### Operaciones reales (cliente `client/client.ts`)
+
+| Caso | Resultado esperado | Resultado observado | Transacción |
+| --- | --- | --- | --- |
+| Crear Registro | Se crea la cuenta Registro | Creado | [Explorer](https://explorer.solana.com/tx/3Thsnj8C9VrV4vBuRg4Lgq1FT6WXvJgrMdmzg3eN39w9kg611wwz6c7K6WctzxnD87pGouxWW8L8oXXN8bsqsRaV?cluster=devnet) |
+| Crear Cliente | Cliente id 1 creado y referenciado en el Registro | "Cliente Isaac K creado con id: 1" | [Explorer](https://explorer.solana.com/tx/3TYp9AvRJVKb15YPgkRp7PdtqQ9cE8QPakqynKhDuaE5UdnccMsPGVwMB8UptdgAPnZyPiAnXHP8P7GGT9gPQdjZ?cluster=devnet) |
+| Registrar venta válida (SKU `SAB01`) | Se crea Venta; `compras` y `historial` del Cliente se actualizan | Venta creada | [Explorer](https://explorer.solana.com/tx/2WDj87VvaJpNMdgDWiBc4Nuk9bD7S3wCZLCq47eZ4whbZrSu2eoWvAzQqwSPVPpHH4D7XRphZiJmVFKmPcbbjxCV?cluster=devnet) |
+| Registrar una segunda venta | Se crea otra Venta del mismo cliente | Venta creada | [Explorer](https://explorer.solana.com/tx/3ipWTvAiwqea5K9rMqtmVidXndvNRDkuiroJDWNLoXcmWXtKST9dE3axpiVvFt5PQftz5n5BnDdvqQ3rjg8r1KZD?cluster=devnet) |
+| Corregir el importe | Cambia el monto de la misma Venta | Monto actualizado | [Explorer](https://explorer.solana.com/tx/4LWPj36qyWnDoguBTfdjB8WhcXbQKuW9v5wjLRj6PsyP1KySaHcHdqzGTHiAitvVE5kc7k4XbFJN9f49UvzzGviA?cluster=devnet) |
+| Devolución válida (1.ª venta) | Se cierra la Venta; Cliente actualizado | Venta cerrada | [Explorer](https://explorer.solana.com/tx/p5EivMSbdAoyfsVhb5g9c8q5Q7C57DuiwpuJJykt5AUYkuzZm83mKhMoNk7u8gx6Z8WZbnzEmNrfuFSqguvwoob?cluster=devnet) |
+| Devolución válida (2.ª venta) | Se cierra la Venta; Cliente sin ventas | Venta cerrada | [Explorer](https://explorer.solana.com/tx/3RVGny3B1WptkYFMEsueLvKJN8nixkej6AHf4kJqrKkxvbJiUzhhDneER148zPvBVA3JZ2qqCmEBBMWvzhWeWkGd?cluster=devnet) |
+| **Baja de cliente vacío** | Se cierra Cliente, se retira su referencia, `id_counter` no retrocede | `verClientes` muestra "Ultimo id asignado: 1" y "Registro vacío, aún no hay clientes" | [Explorer](https://explorer.solana.com/tx/hj2C61WX2DHMmAP3pFjY5qzGy3DyTrYLHQjG8ykoA9iLwSPDbbA6hZM5v8YUuhc43uCmYk5NLWjdQoZ8JbZeeTn?cluster=devnet) |
+| **Baja con ventas activas** | Rechazo del programa; cuentas y referencias intactas | `AnchorError ... Error Code: ClienteConVentas. Error Number: 6002` en `lib.rs`; el cliente siguió existiendo y pudo devolverse después | Rechazo en simulación (sin transacción); captura en `evidencias/` |
+
+### Rechazos probados con las pruebas automáticas
+
+| Caso | Error esperado | Prueba |
+| --- | --- | --- |
+| Wallet no autorizada | `NoOwner`; datos intactos | `RECHAZA wallet no autorizada (NoOwner)` ✔ |
+| Venta ajena al cliente | `ConstraintSeeds` | `RECHAZA venta ajena al cliente (ConstraintSeeds)` ✔ |
+| **[Aporte]** Monto = 0 al registrar y al corregir | `MontoInvalido`; no se crea la cuenta | `[APORTE] RECHAZA monto = 0 ...` ✔ |
+| **[Aporte]** SKU de 6 caracteres | `SkuInvalido` | `[APORTE] RECHAZA sku de mas de 5 caracteres` ✔ |
+| Baja con ventas activas | `ClienteConVentas`; cuentas intactas | `RECHAZA dar de baja a un cliente con ventas activas` ✔ |
+| El siguiente alta no reutiliza ids | Marta recibe id 3 | `El siguiente cliente recibe id 3` ✔ |
+
+Los rechazos fallan en la simulación previa, por eso no tienen firma consultable en el Explorer.
+
+## Estructura del repositorio
+
+```
+programa/src/lib.rs            Programa Anchor (Rust)
+programa/tests/anchor.test.ts  Pruebas del programa (Playground)
+programa/client/client.ts      Cliente de TypeScript
+idl.json / tmp-idl/            IDL exportado de la versión desplegada
+clients/js/                    Cliente generado a partir del IDL
+src/                           Frontend (React + Vite); baja de cliente en src/solana/acciones.ts y src/components/Registro.tsx
+evidencias/                    Capturas de las pruebas
 ```
 
-Si el archivo no incluye la dirección del programa, agrega su Program ID público:
+## Notas de seguridad y alcance
 
-```bash
-npm run configurar:idl -- ./tmp-idl/registro.json --program-id TU_PROGRAM_ID
-```
-
-El comando comprueba la estructura esperada, importa el IDL y regenera el cliente. Detén el servidor con `Ctrl+C` y vuelve a ejecutar `npm run dev` después de la importación.
-
-**No edites manualmente el cliente generado.** Si cambias el IDL, ejecuta `npm run cliente`. Conserva juntos en tu repositorio `idl.json`, `src/config/programa.json` y `clients/js/`.
-
-> 🔎 La wallet de Playground y la del navegador pueden ser distintas. Como la autoridad participa en la PDA, lo más sencillo es crear un negocio nuevo desde la app con la wallet del navegador. No necesitas trasladar claves privadas entre entornos.
-
-Consulta la [guía de IDL y Playground](./docs/IDL-Y-PLAYGROUND.md) si necesitas revisar la configuración.
-
-## Seguir las sesiones
-
-El proyecto utiliza el mismo frontend durante ambos días. Puedes elegir el punto de partida con estos comandos:
-
-| Comando | Qué prepara |
-| --- | --- |
-| `npm run clase:dia3` | Pantalla de conexión para explorar wallet, RPC, saldos e IDL. Reserva Registro para el día siguiente. |
-| `npm run clase:dia4` | Pantalla del registro con dos funciones por completar: `crearCliente` y `registrarVenta`. |
-| `npm run clase:resuelto` | Las cinco operaciones implementadas, como referencia para estudiar y contrastar. |
-
-Detén `npm run dev` antes de cambiar de modo y vuelve a iniciarlo al terminar.
-
-> **Guarda tu avance antes de cambiar de modo.** Estos comandos reemplazan `src/solana/acciones.ts`. Los cambios anteriores se respaldan en `.aula/respaldos/`; el IDL y el cliente generado se conservan. Puedes consultar la solución en `materiales/acciones-resuelto.ts.txt` sin reemplazar tu archivo.
-
-## ¿Dónde está cada cosa?
-
-| Ruta | Qué encontrarás |
-| --- | --- |
-| `src/components/` | Pantallas y formularios de la aplicación. |
-| `src/solana/acciones.ts` | Funciones que conectan los formularios con las instrucciones del programa. |
-| `src/solana/lecturas.ts` | Lectura de Registro, Cliente y Venta. |
-| `src/solana/pdas.ts` y `seeds.ts` | Derivación de las direcciones de las cuentas. |
-| `src/solana/tx.ts` | Preparación, envío, confirmación y errores de las transacciones. |
-| `src/config/interfaz.ts` | Título y valores iniciales para personalizar la demo. |
-| `idl.json` | IDL utilizado para generar el cliente del programa. |
-| `clients/js/src/generated/` | Código generado con Codama; no se modifica a mano. |
-| `materiales/` | Versión de ejercicio y solución de las operaciones. |
-| `docs/` | Guías de configuración, pruebas y alcance del ejemplo. |
-
-La base utiliza **React + Vite**, **TypeScript**, **Wallet Adapter**, **Solana Kit**, **web3.js** y **Codama**. La integración entre las librerías ya está preparada para que puedas concentrarte en el flujo de cuentas e instrucciones.
-
-## Probar tus cambios
-
-```bash
-npm run verificar
-```
-
-Este comando comprueba TypeScript, ejecuta las pruebas automatizadas y genera el build del frontend. Las pruebas automatizadas **no envían transacciones**: completa también el recorrido de [pruebas manuales en Devnet](./docs/PRUEBAS-MANUALES.md).
-
-Para tu primera prueba, crea un negocio, agrega un cliente, registra una venta y consulta el resultado. Después prueba corregir el importe, devolver la venta y cancelar una solicitud de firma.
-
-## Si algo no funciona
-
-| Situación | Qué revisar |
-| --- | --- |
-| La wallet no aparece | Abre la app en una pestaña normal del navegador con una extensión compatible instalada. |
-| Falta SOL de prueba | Solicítalo en [Solana Faucet](https://faucet.solana.com/), seleccionando Devnet. |
-| No aparece tu negocio | Comprueba el nombre exacto y la dirección de su autoridad; ambos participan en la PDA. |
-| No puedes repetir un SKU | Cada cliente solo puede tener una venta activa con ese SKU. |
-| El RPC responde con un límite de uso | Espera y vuelve a intentar, o configura otro endpoint de Devnet en `.env.local` siguiendo `.env.example`. |
-| Cambiaste el IDL y falla la comprobación | Ejecuta `npm run cliente` y reinicia el servidor. |
-
-## Recursos y comunidad
-
-- [GitBook de Solana Engineering Track: Advanced](https://waylearn.gitbook.io/solana-engineering-track-advanced).
-- [Programa Registro de Ventas con PDAs](https://github.com/WayLearnLatam/Registro-Ventas-Solana-PDA).
-- [Solana Playground](https://beta.solpg.io/).
-- [Comunidad de WayLearn en Discord](https://discord.gg/hvnpbZxu9b).
-
-Este es un proyecto educativo para **Devnet**. Las validaciones del formulario no sustituyen las restricciones del programa. Revisa [seguridad y alcance](./docs/SEGURIDAD-Y-ALCANCE.md) para conocer los límites del ejemplo y los aspectos que deben revisarse antes de producción.
+Proyecto educativo en Devnet. No incluye claves ni secretos. Antes de un uso real faltaría revisar límites de almacenamiento, gestión de autoridades del programa y reintentos de transacciones.
