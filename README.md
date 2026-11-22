@@ -1,7 +1,6 @@
 # Registro de Ventas en Solana con PDAs
 
 
-
 **Ruta elegida:** Proyecto guiado con una mejora funcional (WayLearn · Solana Engineering Track: Advanced).
 **Versión de partida:** [WayLearnLatam/Registro-Ventas-Solana-PDA](https://github.com/WayLearnLatam/Registro-Ventas-Solana-PDA) (cierre de las sesiones 1–5).
 
@@ -35,16 +34,16 @@ La pertenencia queda garantizada por las seeds y la autoridad por `has_one = own
 
 ## Aporte propio
 
-Sobre la base guiada (que ya incluye la baja de cliente) añadí **validaciones de negocio en Rust**, cada una con su caso de rechazo probado:
+Sobre la base guiada (que ya incluye la baja de cliente) añadí **validaciones de negocio en Rust**. Cinco de ellas tienen su caso de rechazo probado en `tests/anchor.test.ts` (columna **Prueba**); la sexta, `ClienteNoRegistrado`, es una protección adicional que no se puede provocar por el flujo normal y no tiene prueba propia:
 
-| Regla nueva | Error | Dónde |
-| --- | --- | --- |
-| El monto debe ser mayor a 0 | `MontoInvalido` | `registrar_venta`, `cambiar_monto` |
-| El SKU no puede estar vacío ni exceder 5 caracteres | `SkuInvalido` | `registrar_venta` |
-| La descripción no puede exceder 50 caracteres | `DescripcionInvalida` | `registrar_venta` |
-| Máximo 10 clientes por Registro | `RegistroLleno` | `crear_cliente` |
-| Máximo 10 ventas por Cliente | `HistorialLleno` | `registrar_venta` |
-| El cliente debe estar referenciado en el Registro | `ClienteNoRegistrado` | `eliminar_cliente` |
+| Regla nueva | Error | Dónde | Prueba |
+| --- | --- | --- | --- |
+| El monto debe ser mayor a 0 | `MontoInvalido` | `registrar_venta`, `cambiar_monto` | Sí |
+| El SKU no puede estar vacío ni exceder 5 caracteres | `SkuInvalido` | `registrar_venta` | Sí (SKU de 6 caracteres) |
+| La descripción no puede exceder 50 caracteres | `DescripcionInvalida` | `registrar_venta` | Sí (51 caracteres) |
+| Máximo 10 clientes por Registro | `RegistroLleno` | `crear_cliente` | Sí (cliente número 11) |
+| Máximo 10 ventas por Cliente | `HistorialLleno` | `registrar_venta` | Sí (venta número 11) |
+| El cliente debe estar referenciado en el Registro | `ClienteNoRegistrado` | `eliminar_cliente` | No |
 
 **Qué mejora:** antes, una venta de monto 0 se aceptaba, y un SKU largo o el cliente número 11 fallaban con un error de serialización poco claro. Ahora el programa rechaza esos casos con un error específico y sin modificar ningún estado.
 **Cómo se comprueba:** pruebas `[APORTE]` de `tests/anchor.test.ts` (ver tabla de evidencias).
@@ -64,7 +63,7 @@ Además corregí los ejemplos de `client/client.ts`: el SKU `"Sabritas"` (8 cara
 Negocio de la práctica: **Tiendas 3B**. Cliente: Isaac K (id 1).
 Wallet de la práctica: `4nDoX1ZSuzZTM4a4Xc6CKyLybK5DiJAW1NZZ7iwe8Gty`.
 
-Además de las operaciones reales de abajo, `tests/anchor.test.ts` ejecuta **11 pruebas automáticas contra Devnet y las 11 pasan** (captura en `evidencias/`).
+Además de las operaciones reales de abajo, `tests/anchor.test.ts` ejecuta **14 pruebas automáticas contra Devnet y las 14 pasan** (captura en `evidencias/`).
 
 ### Operaciones reales (cliente `client/client.ts`)
 
@@ -90,6 +89,9 @@ Además de las operaciones reales de abajo, `tests/anchor.test.ts` ejecuta **11 
 | **[Aporte]** SKU de 6 caracteres | `SkuInvalido` | `[APORTE] RECHAZA sku de mas de 5 caracteres` ✔ |
 | Baja con ventas activas | `ClienteConVentas`; cuentas intactas | `RECHAZA dar de baja a un cliente con ventas activas` ✔ |
 | El siguiente alta no reutiliza ids | Marta recibe id 3 | `El siguiente cliente recibe id 3` ✔ |
+| **[Aporte]** Descripción de 51 caracteres | `DescripcionInvalida`; no se crea la cuenta | `[APORTE] RECHAZA descripcion de mas de 50 caracteres` ✔ |
+| **[Aporte]** Cliente número 11 | `RegistroLleno` | `[APORTE] RECHAZA el cliente numero 11` ✔ |
+| **[Aporte]** Venta número 11 de un cliente | `HistorialLleno` | `[APORTE] RECHAZA la venta 11 de un cliente` ✔ |
 
 Los rechazos fallan en la simulación previa, por eso no tienen firma consultable en el Explorer.
 
