@@ -53,7 +53,7 @@ Además corregí los ejemplos de `client/client.ts`: el SKU `"Sabritas"` (8 cara
 
 ## Cómo ejecutarlo
 
-1. Abre el proyecto en [Solana Playground](https://beta.solpg.io/https://github.com/karlacateee-blip/Registro-Ventas-Solana-PDA), conéctalo a **Devnet** y pide airdrop.
+1. Abre [Solana Playground](https://beta.solpg.io), pega el contenido de `programa/src/lib.rs`, `programa/tests/anchor.test.ts` y `programa/client/client.ts`, conéctalo a **Devnet** y pide SOL de prueba en https://faucet.solana.com.
 2. **Build** → **Deploy**. Anota el Program ID.
 3. **Test** (`tests/anchor.test.ts`) para correr las pruebas automáticas.
 4. `client/client.ts`: descomenta la operación que quieras probar y pulsa **Run**.
@@ -92,6 +92,17 @@ Además de las operaciones reales de abajo, `tests/anchor.test.ts` ejecuta **11 
 | El siguiente alta no reutiliza ids | Marta recibe id 3 | `El siguiente cliente recibe id 3` ✔ |
 
 Los rechazos fallan en la simulación previa, por eso no tienen firma consultable en el Explorer.
+
+### Prueba en la aplicación web (frontend + wallet Solflare, Devnet)
+
+Negocio de la prueba: **Pruebas**. Wallet de la prueba: `iMEDL72Hzn5s71v1ZshQJGRvW8bwHNjMKvLvES4zVdF` (Solflare, Devnet).
+
+| Caso | Resultado | Evidencia |
+| --- | --- | --- |
+| Baja de cliente vacío desde la pestaña **Eliminar cliente** | Operación confirmada; el cliente se cierra y el registro conserva el último ID asignado | [Explorer](https://explorer.solana.com/tx/5FJE66mBaCvgtDSBNCZcSPUPHiKicTEgXq7CpvUp6Vnx5Qh2XVwmnC63QMfC1JrTehtx4riCphf63ErmaXbUiaEN?cluster=devnet) |
+| Baja con ventas activas | El programa rechaza la operación (`ClienteConVentas`) | Captura en `evidencias/` |
+
+El frontend se verifica con `npm run verificar` (comprobación de tipos, 9 pruebas del proyecto y compilación) y `npm run comprobar:idl` (IDL, Program ID y cliente generado coherentes).
 
 ## Estructura del repositorio
 
