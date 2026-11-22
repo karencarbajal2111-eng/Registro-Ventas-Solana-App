@@ -1,9 +1,6 @@
 {
   "version": "0.1.0",
   "name": "registro",
-  "metadata": {
-    "address": "38oTMyvUTmqkBQeMiuok5F2mPjp9dVadWdBeQTDNmTUY"
-  },
   "instructions": [
     {
       "name": "crearRegistro",
@@ -183,6 +180,32 @@
           "type": "u32"
         }
       ]
+    },
+    {
+      "name": "eliminarCliente",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "registro",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "cliente",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "idCliente",
+          "type": "u16"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -269,6 +292,44 @@
       "code": 6001,
       "name": "NoSKU",
       "msg": "Error, la venta no esta en el historial del cliente"
+    },
+    {
+      "code": 6002,
+      "name": "ClienteConVentas",
+      "msg": "Error, el cliente tiene ventas activas y no puede darse de baja"
+    },
+    {
+      "code": 6003,
+      "name": "ClienteNoRegistrado",
+      "msg": "Error, el cliente no esta referenciado en el registro"
+    },
+    {
+      "code": 6004,
+      "name": "MontoInvalido",
+      "msg": "Error, el monto debe ser mayor a 0"
+    },
+    {
+      "code": 6005,
+      "name": "SkuInvalido",
+      "msg": "Error, el sku no puede estar vacio ni exceder 5 caracteres"
+    },
+    {
+      "code": 6006,
+      "name": "DescripcionInvalida",
+      "msg": "Error, la descripcion excede 50 caracteres"
+    },
+    {
+      "code": 6007,
+      "name": "RegistroLleno",
+      "msg": "Error, el registro alcanzo el maximo de 10 clientes"
+    },
+    {
+      "code": 6008,
+      "name": "HistorialLleno",
+      "msg": "Error, el cliente alcanzo el maximo de 10 ventas en su historial"
     }
-  ]
+  ],
+  "metadata": {
+    "address": "6oWpDCks3gXPfDiGhzPS2ypQUv2SQ36YZt9QVY9yLAbX"
+  }
 }

@@ -19,15 +19,44 @@ import { REGISTRO_PROGRAM_ADDRESS } from "../programs";
 export const REGISTRO_ERROR__NO_OWNER = 0x1770; // 6000
 /** NoSKU: Error, la venta no esta en el historial del cliente */
 export const REGISTRO_ERROR__NO_S_K_U = 0x1771; // 6001
+/** ClienteConVentas: Error, el cliente tiene ventas activas y no puede darse de baja */
+export const REGISTRO_ERROR__CLIENTE_CON_VENTAS = 0x1772; // 6002
+/** ClienteNoRegistrado: Error, el cliente no esta referenciado en el registro */
+export const REGISTRO_ERROR__CLIENTE_NO_REGISTRADO = 0x1773; // 6003
+/** MontoInvalido: Error, el monto debe ser mayor a 0 */
+export const REGISTRO_ERROR__MONTO_INVALIDO = 0x1774; // 6004
+/** SkuInvalido: Error, el sku no puede estar vacio ni exceder 5 caracteres */
+export const REGISTRO_ERROR__SKU_INVALIDO = 0x1775; // 6005
+/** DescripcionInvalida: Error, la descripcion excede 50 caracteres */
+export const REGISTRO_ERROR__DESCRIPCION_INVALIDA = 0x1776; // 6006
+/** RegistroLleno: Error, el registro alcanzo el maximo de 10 clientes */
+export const REGISTRO_ERROR__REGISTRO_LLENO = 0x1777; // 6007
+/** HistorialLleno: Error, el cliente alcanzo el maximo de 10 ventas en su historial */
+export const REGISTRO_ERROR__HISTORIAL_LLENO = 0x1778; // 6008
 
 export type RegistroError =
-  typeof REGISTRO_ERROR__NO_OWNER | typeof REGISTRO_ERROR__NO_S_K_U;
+  | typeof REGISTRO_ERROR__CLIENTE_CON_VENTAS
+  | typeof REGISTRO_ERROR__CLIENTE_NO_REGISTRADO
+  | typeof REGISTRO_ERROR__DESCRIPCION_INVALIDA
+  | typeof REGISTRO_ERROR__HISTORIAL_LLENO
+  | typeof REGISTRO_ERROR__MONTO_INVALIDO
+  | typeof REGISTRO_ERROR__NO_OWNER
+  | typeof REGISTRO_ERROR__NO_S_K_U
+  | typeof REGISTRO_ERROR__REGISTRO_LLENO
+  | typeof REGISTRO_ERROR__SKU_INVALIDO;
 
 let registroErrorMessages: Record<RegistroError, string> | undefined;
 if (process.env["NODE_ENV"] !== "production") {
   registroErrorMessages = {
+    [REGISTRO_ERROR__CLIENTE_CON_VENTAS]: `Error, el cliente tiene ventas activas y no puede darse de baja`,
+    [REGISTRO_ERROR__CLIENTE_NO_REGISTRADO]: `Error, el cliente no esta referenciado en el registro`,
+    [REGISTRO_ERROR__DESCRIPCION_INVALIDA]: `Error, la descripcion excede 50 caracteres`,
+    [REGISTRO_ERROR__HISTORIAL_LLENO]: `Error, el cliente alcanzo el maximo de 10 ventas en su historial`,
+    [REGISTRO_ERROR__MONTO_INVALIDO]: `Error, el monto debe ser mayor a 0`,
     [REGISTRO_ERROR__NO_OWNER]: `Error, no eres el owner del registro`,
     [REGISTRO_ERROR__NO_S_K_U]: `Error, la venta no esta en el historial del cliente`,
+    [REGISTRO_ERROR__REGISTRO_LLENO]: `Error, el registro alcanzo el maximo de 10 clientes`,
+    [REGISTRO_ERROR__SKU_INVALIDO]: `Error, el sku no puede estar vacio ni exceder 5 caracteres`,
   };
 }
 
